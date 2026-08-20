@@ -4,9 +4,12 @@ name: issue-AG-164-request-consumables-prep-menu
 
 ## NOW
 
-- **Status (2026-07-22):** Backend + frontend both COMPLETE. `tsc --noEmit` clean on both repos.
-  Two new migrations written, NOT run yet (user runs when ready). No manual browser verification
-  done this session.
+- **Status (2026-08-20): DONE (closed by user).** Ticket closed at the user's explicit instruction.
+  Build-time status as of 2026-07-22, kept for reference: backend + frontend both COMPLETE,
+  `tsc --noEmit` clean on both repos. Two new migrations were written but NOT run as of that date;
+  no manual browser verification had been done in that session either. Whether the migrations have
+  since been run or the feature verified in-browser was not re-checked before closing — if this
+  area comes up again, verify current DB/migration state rather than assuming either is done.
 - **Correction made mid-build:** re-checked live DB before touching migrations (per user's
   explicit instruction) and found the original Request V2 create-table migration
   (`1784703539303-...`) had actually already been run — falsifying the earlier assumption it was

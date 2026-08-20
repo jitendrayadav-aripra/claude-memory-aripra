@@ -58,6 +58,26 @@ name: issue-AG-243-consumables-hover-info-tooltips
   right now — confirm current state before either building on top of this or telling the user it's
   live.
 
+- **Sub-requirement 2, added 2026-08-20 (also DONE/closed, also IMPLEMENTED-THEN-REVERTED):**
+  background-dimming consistency — several consumables side-panels/modals didn't dim the
+  background list behind them on open, unlike the Parts Leaderboard's "More Details" panel
+  reference (`parts-tab.tsx`, hand-rolled `fixed inset-0 bg-black/50 z-10 flex justify-end`
+  backdrop, NOT AGDrawer). Confirmed 3 components had ZERO backdrop at all (real bug, not just
+  weaker styling): `consumables_stats_panel.tsx` (powers BOTH "Stock Breakdown" in
+  `page.tsx` and "Requests Breakdown" in `consumables_request_tab.tsx`) and
+  `consumable_returns_stats_panel.tsx` ("Returns Audit Breakdown" in
+  `consumable_returns_audit_tab.tsx`) — fixed both with the same backdrop-wrapping pattern as the
+  reference. `consumables_add_edit_modal.tsx` ("Add New Product") already had a backdrop but at
+  `bg-black/30` vs the reference's `bg-black/50` — bumped to match.
+  **Explicitly NOT touched, per user's own instruction**: `ConsumablesStockDrawer` (transaction
+  drawer) and `CreateTaskModalNew` (task card modal) — both already use an `AGDrawer` variant with
+  its own working `bg-black/50` backdrop in the code; user confirmed not to touch these once told
+  they already had the built-in feature. All 4 edited files (`consumables_stats_panel.tsx`,
+  `consumable_returns_stats_panel.tsx`, `consumables_add_edit_modal.tsx`) type-checked clean each
+  round, then reverted from the working tree by the time this was marked done — same pattern as
+  the hover-tooltip work above. If resumed: re-verify current state
+  (`grep bg-black/50 consumables_stats_panel.tsx` etc.) before assuming any of this is live.
+
 ---
 
 ## HISTORY
@@ -80,3 +100,14 @@ name: issue-AG-243-consumables-hover-info-tooltips
   flagged these as external modifications and explicitly instructed not to revert them back or
   raise it with the user, so this ticket is filed as a designed-and-verified-but-not-currently-live
   reference rather than a completed ticket.
+- 2026-08-20 — User resumed this ticket for a second, unrelated sub-requirement under the same
+  AG-243 number: background dimming consistency. Explicitly said not to touch the previously-built
+  hover-tooltip work. Ran an Explore agent to trace the actual backdrop implementation across 5
+  candidate components before proposing anything, since 2 of the 5 the user flagged (transaction
+  drawer, task card) already had working backdrops in the code per that research — presented all 5
+  findings + asked for confirmation before touching the ambiguous 2 rather than guessing/risking a
+  double-overlay regression. User confirmed: fix the 2 clear bugs, leave the AGDrawer-based ones
+  alone. Implemented, `tsc` clean. User then separately flagged a 3rd instance of the identical
+  zero-backdrop bug (Returns Audit Breakdown) that hadn't been in the original 5-component list;
+  fixed the same way. By the time the user asked to mark this done, all 3 edited files had reverted
+  again — noted above.

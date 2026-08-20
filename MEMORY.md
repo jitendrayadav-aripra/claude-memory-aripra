@@ -57,5 +57,4 @@
 
 ## Tickets — ACTIVE (pending action on me). Done/To Test → [ARCHIVE.md](ARCHIVE.md).
 
-- [Request V2 consumables flow](aripra/issue-request-v2-consumables-flow.md) — backend+frontend done 2026-07-22 (tsc clean, migration not run); see also AG-164 below
-- [AG-164 Request Consumables (Prep menu)](aripra/issue-AG-164-request-consumables-prep-menu.md) — built 2026-07-22 (tsc clean both repos, 2 new migrations not run), builds on Request V2 above
+- [Request V2 consumables flow](aripra/issue-request-v2-consumables-flow.md) — backend+frontend done 2026-07-22 (tsc clean, migration not run); see also AG-164 (now archived)

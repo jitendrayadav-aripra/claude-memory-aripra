@@ -4,7 +4,11 @@ name: issue-request-v2-consumables-flow
 
 ## NOW
 
-- **Status (2026-07-22):** Backend AND frontend both COMPLETE. `tsc --noEmit` clean (exit 0) on
+- **Status: DONE (closed) 2026-08-31**, per explicit user close-out. As of the last check
+  (2026-07-22) migration-run and manual-browser-verification status were still open — not
+  re-verified before closing, so don't assume either happened without checking. If this area comes
+  back up, re-confirm the migration state before building on top of it.
+- **Status (2026-07-22, historical):** Backend AND frontend both COMPLETE. `tsc --noEmit` clean (exit 0) on
   both `car-planet-backend` and `carplanet`. Migration has NOT been run — waiting for user to run
   `migration:run` themselves. No manual browser verification done yet (no dev server run this
   session) — that's the only remaining item.

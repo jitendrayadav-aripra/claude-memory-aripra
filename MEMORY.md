@@ -40,6 +40,7 @@
 - [Debugging method](feedback/debugging-method.md) — MEASURE FIRST: auto-add a `#<ticket> TEMP DEBUG` logger capturing all candidates in ONE pass, auto-read, AUTO-CLEANUP before commit; lock the repro matrix; deterministic fix
 - [Session-start routine](feedback/session-start-routine.md) — auto-orient: index = live rules; scan skills; read ticket NOW first; token economy from action one
 - [Session-end: back up memory](feedback/session-end-backup-memory.md) — at wrap-up / "back up", commit + push the memory repo (keep it PRIVATE, owner-only)
+- [No library install without permission](feedback/no-library-install-without-permission.md) — never `npm install` a new dependency (either repo) on my own initiative, even when obviously the right tool — always ask first
 - [Ticket reply BY TYPE](feedback/github-reply-by-ticket-type.md) — classify (log-investigation / new-requirement / existing-code-change) → use that structure; conclusion-first, annotated evidence, symptom-vs-root-cause, end with an ask (tracker-agnostic)
 - [Ticket reply tone](feedback/github-reply-tone.md) — write in your own human voice, not AI-sounding; "we" not "I"
 - [Support-ticket comment structure](feedback/support-ticket-comment-structure.md) — log-investigation reply: version check → log lines → cases → if unproven say "replicating"; query by device id
@@ -57,4 +58,3 @@
 
 ## Tickets — ACTIVE (pending action on me). Done/To Test → [ARCHIVE.md](ARCHIVE.md).
 
-- [Request V2 consumables flow](aripra/issue-request-v2-consumables-flow.md) — backend+frontend done 2026-07-22 (tsc clean, migration not run); see also AG-164 (now archived)

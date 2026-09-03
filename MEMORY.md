@@ -58,3 +58,5 @@
 
 ## Tickets — ACTIVE (pending action on me). Done/To Test → [ARCHIVE.md](ARCHIVE.md).
 
+- [AG-269](aripra/issue-AG-269-consumables-price-lookup.md) — Consumables tab ignores manual stock-adjustment prices; verified true, fix deferred, not started
+

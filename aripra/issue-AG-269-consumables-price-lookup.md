@@ -4,9 +4,32 @@ name: issue-AG-269-consumables-price-lookup
 
 ## NOW
 
-- **Status (2026-09-03): DEFERRED — analysed and verified, not started.** User said "we will do it
-  later." No branch/code changes yet. Next action when resumed: implement the fix below, plan in
-  `todo.md` first per project workflow rules, get sign-off, then build.
+- **Status: DONE (closed) 2026-09-04.** `tsc` clean (backend). Closed by explicit user instruction.
+- **Scope changed from the original ticket text before building** — the user gave a NEW requirement
+  on resume (2026-09-04), overriding the ticket's own "merge Adjustment-In into the existing
+  most-recent-wins resolution" acceptance criteria: instead, a **strict per-product priority**,
+  Invoice price > PO unit price > manual stock-adjustment price > no price — each tier resolved
+  independently ("most recent within the tier"), combined by priority, NOT by recency across mixed
+  sources. This is a real behaviour difference from what the ticket originally asked for: under the
+  old plan, a newer PO-only procurement row could still out-rank an older row's real invoice price;
+  under what was actually built, invoice price always wins for that product regardless of recency.
+  If this ticket is ever compared back against its own Jira acceptance criteria, flag that the built
+  behaviour is the user's later verbal instruction, not the original AC text.
+- **Implemented in `resolveLastPriceByProductId()`** (`inventory.service.ts:5714`, corrected line —
+  the ticket's own text had a stale `:5560` reference): 3 independent tiers
+  (`invoicePriceByProductId`/`poPriceByProductId` from `ConsumableProcurement`,
+  `adjustmentPriceByProductId` from `ConsumableTransaction` `Adjustment In` rows, newly added), then
+  `invoice ?? po ?? adjustment` per product. `ConsumableTransactionType` import added to
+  `inventory.service.ts`.
+- **No backfill/migration** — confirmed via direct investigation: `ConsumableProduct` has zero price
+  columns, nothing anywhere caches a resolved price, `resolveLastPriceByProductId()` recomputes fresh
+  from live data on every call (all 3 callers: `getConsumablesOnHandStats`,
+  `getConsumablesCategorySummary`, `getConsumablesStockList`). The new logic applies to all 726
+  products' historical data immediately, no script needed. User asked this exact question before
+  giving permission to build — answered and confirmed correct via code investigation, not assumption.
+- Documented in `my-docs/projects/parts-and-consumable-inventory-4th-project/NEW_PARTS_AND_STOCK_INVENTORY.md`
+  (new "Related ticket — AG-269" section + changelog entry, 2026-09-04), per explicit user instruction
+  to keep that doc current on "how the prices are being shown."
 - **Ticket:** AG-269, `Consumables tab price lookup ignores manually-entered stock-adjustment
   prices` (Story, child of Epic AG-255 "Parts Inventory — Leakage & Accountability Dashboard").
   Reporter/creator: Akash Robert. Status: Backlog. Priority: High ("fix this first" — must land

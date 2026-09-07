@@ -49,6 +49,7 @@
 - [Daily worklog → Excel](convention/daily-worklog.md) — "show my changes"/"EOD log" → READ [[worklog-daily]] for the date; output JUST a plain Details block; mandatory cheap git cross-check (oneline only)
 - [Worklog data (ALL work)](worklog-daily.md) — single source of truth; APPEND every session for commits AND non-commit work
 - [Work-hours stop-signal](feedback/work-hours-stop-signal.md) — if you bill hourly: `/hours` derives honest daily hours from [[worklog-daily]], NEVER pad, and proactively say "that's a full day, good to stop"
+- [Don't default ticket fields to N/A](feedback/dont-default-ticket-fields-to-na.md) — check each ticket has NO real surface for a template field (esp. "Notes for Tester") before copying N/A from a sibling ticket
 
 ## References
 
@@ -58,5 +59,4 @@
 
 ## Tickets — ACTIVE (pending action on me). Done/To Test → [ARCHIVE.md](ARCHIVE.md).
 
-- [AG-269](aripra/issue-AG-269-consumables-price-lookup.md) — Consumables tab ignores manual stock-adjustment prices; verified true, fix deferred, not started
 

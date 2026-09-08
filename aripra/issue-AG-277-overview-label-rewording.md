@@ -46,6 +46,16 @@ need it, being pure copy/style).
 [[issue-AG-272-parts-inventory-task-card-redirect]] (the reason VRM's blue "link" styling became
 misleading — it opens the Task Card now, not a real navigation).
 
+**2026-09-07 follow-up (same session, after this ticket was already closed) — Consumables KPI card
+click-through added.** Separate small fix in the same file, no new ticket number given — the
+Consumables tile was the only Overview KPI card with no `onClick`, a leftover gap the file's own
+comment flagged as deferred until the Consumables sub-tab existed (it has, since Checkpoint 4).
+Added `goToConsumables()` mirroring the existing `goToAlertChecks()` (navigates to
+`&sub=CONSUMABLES`), plus the same hover/cursor styling the other 4 cards already have. Also updated
+the file's own top-of-file comment, which still claimed "Consumables tile has no click-through yet."
+`tsc`+`next lint` clean. Documented in `NEW_PARTS_AND_STOCK_INVENTORY.md`'s changelog as its own
+entry rather than folded silently into AG-277's, since it wasn't part of the original AG-277 scope.
+
 ---
 
 ## HISTORY

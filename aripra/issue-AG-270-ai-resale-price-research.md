@@ -7,10 +7,11 @@ metadata:
 
 ## NOW
 
-**Status: DONE (closed) 2026-09-07.** Research-only sub-task, explicitly no build commitment per its
-own ticket text — closed with **no code changes**, findings + two client-facing docs delivered
-instead. **Parked for a future resume when the user actually wants to implement AI price
-estimation** — not abandoned, deliberately deferred.
+**Status: DONE (closed) 2026-09-09, re-parked.** Research-only sub-task, explicitly no build
+commitment per its own ticket text — closed with **no code changes** both times, findings + client
+docs delivered instead. **Parked again for a future resume when the user actually wants to
+implement AI price estimation** — not abandoned, deliberately deferred, resumed once already
+(2026-09-09) for a follow-up comparison round and expected to be resumed again.
 
 **Ticket shape:** Jira Sub-task (not a Story), child of [[issue-AG-260-resold-resolution-path]] —
 the direct answer to one of AG-260's own original open questions: "Is resale price always
@@ -68,7 +69,29 @@ staff-entered, or should the UI suggest a default (e.g. ~50% of PO price) staff 
   elsewhere, "Device or resource busy"), then the user said not to bother removing it after all, so
   both files now sit in the project folder; the new one is the current/intended reference.
 
-**No code touched, no migration** — pure research + documentation ticket.
+**2026-09-09 resume — 4th option added + comparison doc.** User resumed the ticket and asked
+specifically whether eBay could be scraped/scrolled for resale comps. Answered directly (feasible
+only via eBay's official Browse/Insights API, not scraping — ToS risk, fragility, no eBay
+credentials configured in `.env` today; Insights API, which has actual sold prices rather than
+inflated asking prices, requires an approval process outside our control). User then supplied their
+own 3 options (eBay scrape, Gemini prompt, rule-based bracket off paid price/status/arrival date)
+and asked for a full pros/cons/challenges/feasibility analysis plus any further options. Identified
+the rule-based bracket approach as a genuinely new 4th option not covered in the original research
+(cheap, deterministic, zero external dependency, uses only fields already on `TaskPart` —
+`poUnitPrice`/`invoiceUnitPrice`, `status`, `partArrivedDate`/`firstFlaggedDate`) and recommended a
+layered fallback chain (ship the rule-based bracket first as a floor, layer Gemini on top, treat
+eBay's official API as a later accuracy upgrade, revisit AutoGrid's own historical `resalePrice`
+data once enough real outcomes accumulate). Produced a new doc,
+`my-docs/projects/parts-and-consumable-inventory-4th-project/AI_Resale_Price_Estimation_Options_Comparison.docx`
+— a 5-column comparison table (Option/Feasibility/Pros/Cons-Risks/Key Challenges) covering eBay
+scraping, eBay official API, Gemini prompt, rule-based brackets, and historical-data-driven (not
+yet viable) — plus a "data already available" section and the recommendation. Built via the `docx`
+npm package this time (installed fresh into a scratch dir) rather than hand-rolling OOXML/ZIP as
+the original research doc required — much more reliable for a real table. Left the original
+`AI_Resale_Price_Estimation_Research.docx` untouched (still open in Word, same file that blocked
+deletion earlier) — this is a separate new file, not an edit to it.
+
+**No code touched, no migration either round** — pure research + documentation ticket.
 
 **Related:** [[issue-AG-260-resold-resolution-path]] (parent ticket, the original open question this
 answers), [[issue-AG-269-consumables-price-lookup]] (the "missing price" pool this could eventually

@@ -7,9 +7,9 @@ metadata:
 
 ## NOW
 
-**Status: DONE (closed) 2026-09-08.** `tsc`+`next lint` clean both repos. Closed by explicit
-instruction. Part of the Parts Oversight module — documented in
-`NEW_PARTS_AND_STOCK_INVENTORY.md` under "Related ticket — AG-284".
+**Status: DONE (closed) 2026-09-08, resumed+re-closed 2026-09-09.** `tsc`+`next lint` clean both
+repos. Closed by explicit instruction both times. Part of the Parts Oversight module — documented
+in `NEW_PARTS_AND_STOCK_INVENTORY.md` under "Related ticket — AG-284".
 
 **Both "Awaiting Supplier Return" and "Return Window Unknown" are the same shared component**
 (`parts_inventory_drilldown_panel.tsx`), opened with different `resolutionStage` params
@@ -22,8 +22,9 @@ Technician and Days columns — every other bucket/resolution-stage is unaffecte
   `taskPart.partArrivedDateText`, `taskPart.partArrivedDate`, `poSupplier.returnWindowDays`. The
   `po`/`poSupplier` join already existed for this bucket (added back in AG-260-era resolution
   logic) — no new join, no migration (all source columns already existed).
-- **"Awaiting Supplier Return" (`WAITING_TO_BE_RETURNED`)** — 4 columns, in order: First Flagged
-  Date, Parts Arrived Date, Supplier Window, Return Days Left.
+- **"Awaiting Supplier Return" (`WAITING_TO_BE_RETURNED`)** — 4 columns, in order: Parts Arrived
+  Date, First Flagged Date, Supplier Window, Return Days Left. (Order swapped 2026-09-09 — see
+  below; originally shipped First Flagged Date first.)
   - Both dates go through `formatTableDate()` (established `*DateText` convention).
   - "Supplier Window" shows `"{returnWindowDays} days"` or "—". Originally named "Actual Supplier
     Window" — renamed to just "Supplier Window" per a same-day follow-up request (drop "Actual").
@@ -34,8 +35,9 @@ Technician and Days columns — every other bucket/resolution-stage is unaffecte
     here don't have that PO-sign-off concept — used a simplified version instead (plain "N days",
     red ≤1 day / orange =2 days / default otherwise, matching the same color thresholds).
 - **"Return Window Unknown" (`UNKNOWN`)** — 2 columns, in order: Part Arrival Date, First Flagged
-  Date. Note the reversed lead column vs. the other drilldown — this matches the ticket's own
-  column-order spec exactly, not an oversight.
+  Date. Both drilldowns now lead with the arrival date then the flagged date (see 2026-09-09
+  follow-up below) — a deliberate real-world sequence (arrive, then later get flagged), not a
+  coincidence of column order.
 - **"Days" column renamed to "Days Since Arrival"** — same-day follow-up. The user noticed "Days"
   (existing column, `DATEDIFF(NOW(), partArrivedDate)`, shared by all 8 buckets this panel serves)
   read as confusingly similar to the new "Return Days Left" and asked for a clearer name or a
@@ -68,3 +70,9 @@ Technician and Days columns — every other bucket/resolution-stage is unaffecte
   stopped for confirmation. User said "yes go ahead" — applied, lint-checked.
 - 2026-09-08: User asked for commit messages for both repos, then said "mark the ticket AG-284 as
   done" — closed, no further changes.
+- 2026-09-09: User resumed the ticket for one small change — swap "Awaiting Supplier Return"'s
+  column order so Parts Arrived Date leads First Flagged Date (reflecting the real sequence: a
+  part arrives, then is later flagged faulty/incorrect). Applied directly (array-order swap +
+  updated the file's own explanatory comment, which had described the old First-Flagged-first
+  order as deliberate). `tsc`+`next lint` clean. User then said "mark the ticket as done" — closed
+  again, no further changes.

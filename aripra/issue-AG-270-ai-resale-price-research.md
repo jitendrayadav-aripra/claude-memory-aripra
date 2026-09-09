@@ -1,17 +1,18 @@
 ---
 name: issue-AG-270-ai-resale-price-research
-description: AG-270 — research sub-task of AG-260, can AI estimate a part's resale price before it's listed; no build, findings + client docs produced, parked for later implementation
+description: AG-270 — resale-price estimation sub-task of AG-260; research + client docs, then a rule-based bracket formula actually built into the Overview tile and Task Card
 metadata:
   type: project
 ---
 
 ## NOW
 
-**Status: DONE (closed) 2026-09-09, re-parked.** Research-only sub-task, explicitly no build
-commitment per its own ticket text — closed with **no code changes** both times, findings + client
-docs delivered instead. **Parked again for a future resume when the user actually wants to
-implement AI price estimation** — not abandoned, deliberately deferred, resumed once already
-(2026-09-09) for a follow-up comparison round and expected to be resumed again.
+**Status: DONE (closed) 2026-09-09 — third round, now with real code built.** Started as a
+research-only sub-task (closed 2026-09-07, no code), resumed 2026-09-09 for a follow-up comparison
+round (still no code, closed again), then resumed a third time the same day and the rule-based
+bracket option was actually implemented — Overview tile + Task Card, both live now. Not parked any
+more for that specific approach; eBay/Gemini-based approaches (see comparison doc) remain parked
+for a future resume if the rule-based estimate proves insufficient in practice.
 
 **Ticket shape:** Jira Sub-task (not a Story), child of [[issue-AG-260-resold-resolution-path]] —
 the direct answer to one of AG-260's own original open questions: "Is resale price always
@@ -91,7 +92,33 @@ the original research doc required — much more reliable for a real table. Left
 `AI_Resale_Price_Estimation_Research.docx` untouched (still open in Word, same file that blocked
 deletion earlier) — this is a separate new file, not an edit to it.
 
-**No code touched, no migration either round** — pure research + documentation ticket.
+**2026-09-09 — rule-based bracket actually built (Overview tile + Task Card).** Same day as the
+comparison doc, user asked to implement option 3 from that doc — a deterministic formula, not an
+AI/eBay call. Design: anchor = `invoiceUnitPrice ?? poUnitPrice`; bracket 50% for Faulty (salvage
+tier), 80% for Incorrect/Not Required (physically unused); a further −5% per 30 days since
+`partArrivedDate`, floored at 20% of anchor so it never suggests £0. **Placeholder percentages, not
+validated against real sold prices** — explicitly flagged as tunable.
+- New shared helper `computeSuggestedResalePrice(anchorPrice, status, partArrivedDate)` in
+  `carplanet/.../non-conforming/non_conforming_tab.tsx`, exported next to the existing
+  `computeDaysLeft` (same reuse precedent AG-284 established).
+- **Requirement changed mid-flight** (screenshot-driven follow-up, same day): originally scoped to
+  pre-fill the "Listed" action's `askingPriceInput` field in `part_note_panel.tsx` — before that was
+  built, the user pivoted to two different surfaces instead: the Overview "Awaiting eBay Listing"
+  tile, and the Task Card's info-icon tooltip. The `askingPriceInput` pre-fill was never built.
+  - **Overview tile** (`overview_tab.tsx`, backend `getPartsResolutionBuckets` in
+    `inventory.service.ts`) — the "Awaiting eBay Listing" tile's headline number flipped from
+    `SUM(poUnitPrice)` (price paid) to a new `SUM(CASE...)` aggregate mirroring the bracket formula
+    in raw SQL (`readyForSaleRecoverableValue`); price paid moved to an MUI `Tooltip` on hover. Only
+    this one tile changed — the other 3 resolution-bucket tiles and the segmented bar/legend total
+    still use paid price, kept apples-to-apples on purpose (not requested to change). No new join,
+    no migration.
+  - **Task Card** (`stock-details/task-v2/`) — `TaskPartsStatusBadge`'s existing info-icon tooltip
+    (AG-274/AG-282's mechanism) gained a "Recoverable: £X" line, shown only when `status` is Faulty,
+    Incorrect, or Not Required. Frontend `TaskPart` type (`types/task.ts`) gained
+    `invoiceUnitPrice`/`partArrivedDate` — both already present in the wire response (`getTasks`
+    loads full entities) but never modelled on the frontend before. `create_task_modal_new.tsx`
+    passes the 3 new props through.
+- `tsc` clean both repos, `next lint` clean on every changed frontend file.
 
 **Related:** [[issue-AG-260-resold-resolution-path]] (parent ticket, the original open question this
 answers), [[issue-AG-269-consumables-price-lookup]] (the "missing price" pool this could eventually
@@ -119,3 +146,17 @@ extend to).
   in use) then explicitly waved off — no cleanup needed. User then said to mark AG-270 done and move
   to a new ticket, explicitly parking the actual AI-estimation build for a future resume, not
   abandoning it.
+- 2026-09-09: User resumed a third time, asked to explain and get permission for implementing the
+  rule-based bracket option (Overview tile / Task Card usage not yet specified). Explained the
+  formula design, proposed pre-filling `part_note_panel.tsx`'s "Listed" asking-price field — got
+  "yes go ahead" but before implementing, the user sent a screenshot-driven follow-up changing the
+  target surfaces to the Overview tile + Task Card info tooltip instead (see NOW section). Traced
+  both real data sources (`getPartsResolutionBuckets` for the tile, `getTasks`'s full-entity load
+  for the Task Card) before proposing a revised plan, got a second "yes go ahead", built both
+  surfaces + the shared `computeSuggestedResalePrice` helper. `tsc` clean both repos, `next lint`
+  clean on every changed file. Gave commit messages for both repos on request, then user said to
+  mark AG-270 done again and asked for `NEW_PARTS_AND_STOCK_INVENTORY.md` to be brought up to date
+  for every ticket this session that hadn't been reflected there yet — added this ticket's own
+  "Related ticket — AG-270" section + changelog entry, and separately fixed the doc's stale
+  "Status: BUILT" wording on AG-277/278/284/258 (all had since been closed, doc never updated) plus
+  a duplicated changelog header under AG-284 from an earlier edit.

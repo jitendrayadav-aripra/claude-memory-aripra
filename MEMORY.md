@@ -53,6 +53,7 @@
 - [Segmented control, one-sided radius](feedback/segmented-control-one-sided-radius.md) — one-sided border-radius per segment in given CSS = seamless multi-segment bar (round only outer ends), not a padded floating-pill toggle
 - [Always provide commit msg after changes](feedback/always-provide-commit-message-after-changes.md) — give it proactively right after tsc/lint pass, don't wait to be asked
 - [Short commit messages](feedback/short-commit-messages.md) — one concise line, not a multi-bullet body
+- [Create ticket file immediately on open](feedback/create-ticket-file-immediately-on-open.md) — the moment "new ticket: X" is said, create its memory file + active-index line, before any analysis — not at close-out, not when asked
 
 ## References
 

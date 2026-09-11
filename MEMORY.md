@@ -54,9 +54,11 @@
 - [Always provide commit msg after changes](feedback/always-provide-commit-message-after-changes.md) — give it proactively right after tsc/lint pass, don't wait to be asked
 - [Short commit messages](feedback/short-commit-messages.md) — one concise line, not a multi-bullet body
 - [Create ticket file immediately on open](feedback/create-ticket-file-immediately-on-open.md) — the moment "new ticket: X" is said, create its memory file + active-index line, before any analysis — not at close-out, not when asked
+- [Always update the living doc](feedback/always-update-living-doc.md) — proactively update `NEW_PARTS_AND_STOCK_INVENTORY.md` at every ticket close-out in this domain, don't wait to be asked
 
 ## References
 
+- [Local MySQL access without MCP](reference/local-mysql-access-without-mcp.md) — no local MySQL MCP configured on this machine (`.mcp.json` gitignored, doesn't exist); connect directly via `mysql2` + `car-planet-backend/.env` instead — mind the CRLF parsing gotcha
 - [claude-skills repo](reference/claude-skills-repo.md) — optional shared skills repo; auto fetch + ff-only pull at session start
 - [Session-start skills hook](reference/session-start-skills-hook.md) — `SessionStart` hook auto-pulls the skills repo each launch (adapt the path/repo to yours)
 - *(add your tracker cookbook + platform reference files here)*

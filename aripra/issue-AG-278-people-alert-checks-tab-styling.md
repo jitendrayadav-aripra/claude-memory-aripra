@@ -7,8 +7,10 @@ metadata:
 
 ## NOW
 
-**Status: DONE (closed) 2026-09-08.** `tsc`+`next lint` clean. Pure UI restructuring — no backend,
-no data, no migration. Closed by explicit instruction.
+**Status: DONE (closed) 2026-09-11.** Originally closed 2026-09-08 as pure UI restructuring, then
+bounced back 2026-09-11 for a real regression (all 4 Overview tiles landing on the wrong Alert
+Checks tab) — regression fixed same day, `tsc`+`next lint` clean, re-closed by explicit
+instruction.
 
 **Source:** two screenshots from the QC/PDI module (Prep > Inspection Dashboard > Pre Delivery
 Inspection's "Pending PDI / Completed PDI" toggle, and a Cosmetic-Inspection-style "Exterior [0] /
@@ -73,6 +75,39 @@ in both components exactly as it was, just with the leading "N · " stripped fro
 cars still in stock", "Car gone, parts still on the shelf") and `PartsInventoryReadyCarsTable`'s own
 hardcoded title left as "All parts arrived, car waiting — nothing fitted" (it never had a number to
 begin with). `tsc`+`next lint` clean after the correction.
+
+**2026-09-11 — bounced back, real regression in this ticket's own build.** Since Alert Checks
+moved from 4 stacked tables to a single-tab-at-a-time bar, all 4 Overview KPI tiles share one
+identical handler, `goToAlertChecks` (`overview_tab.tsx:64-65`), which routes to
+`?tab=PARTS_INVENTORY&sub=ALERT_CHECKS` with no worklist identifier — confirmed this is a real,
+current bug, not hypothetical. `AlertChecksTab` always initializes `activeTab` to `"late"`
+(`alert_checks_tab.tsx:21`) and never reads a URL param to override it. Net effect: all 4 tiles
+land on "Late to arrive" regardless of which one was clicked.
+
+**Confirmed the exact tile→tab mapping the fix needs** (matches the ticket's own AC): Received but
+unfitted → `ready` ("Nothing fitted"); Parts arrived on sold cars → `gone` ("Car gone"); Overdue
+fitting → `breach` ("Received >2 days"); Awaiting delivery → `late` ("Late to arrive"). Each tile's
+own stat semantically matches its target worklist exactly (e.g. "awaiting delivery"/on-order parts
+are the ones still in the late/no-ETA pipeline).
+
+**Confirmed the exact URL-param pattern to reuse, not invent new**:
+`parts_inventory_tab.tsx` already does this same thing one level up — `useSearchParams()` +
+`useEffect` reading `sub=` to set `activeSubTab`, and `router.push` building the URL with that
+param. Plan: extend `goToAlertChecks` to take a tile-specific key and append `&alertTab=<key>`;
+`AlertChecksTab` reads it the same way `parts_inventory_tab.tsx` reads `sub=`, falling back to the
+existing `"late"` default when absent (so the main tab bar's plain navigation stays unaffected, per
+the ticket's own 2nd AC).
+
+**2026-09-11 — regression fix built, `tsc`+`next lint` clean.**
+`overview/overview_tab.tsx`: `goToAlertChecks` now takes `alertTab: "late" | "breach" | "ready" |
+"gone"` and appends `&alertTab=${alertTab}` to the pushed URL; all 4 KPI tiles updated to pass their
+matching key (Received but unfitted → `ready`, Parts arrived on sold cars → `gone`, Overdue fitting
+(>2 days) → `breach`, Awaiting delivery → `late`) — confirmed via grep that no tile still calls the
+old parameterless form. `alert-checks/alert_checks_tab.tsx`: added `useSearchParams()` +
+`useEffect` reading `alertTab`, validated against an `ALERT_TAB_KEYS` array before calling
+`setActiveTab`; invalid/absent param leaves the existing `useState<AlertTabKey>("late")` default
+untouched, satisfying the ticket's 2nd AC (plain nav via the main sub-tab bar unaffected). No
+backend involvement — pure frontend regression.
 
 **Related:** [[issue-AUT-3572-parts-consumables-inventory-module]] (the module this lives in).
 

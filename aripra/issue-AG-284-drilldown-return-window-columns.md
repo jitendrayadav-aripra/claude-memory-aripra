@@ -7,9 +7,67 @@ metadata:
 
 ## NOW
 
-**Status: DONE (closed) 2026-09-08, resumed+re-closed 2026-09-09.** `tsc`+`next lint` clean both
-repos. Closed by explicit instruction both times. Part of the Parts Oversight module — documented
-in `NEW_PARTS_AND_STOCK_INVENTORY.md` under "Related ticket — AG-284".
+**Status: DONE (closed) 2026-09-11.** Previously closed 2026-09-08, resumed+re-closed 2026-09-09,
+bounced back again 2026-09-11 for the 3-bucket extension below — built, refined, and re-closed same
+day. `tsc`+`next lint` clean both repos. Part of the Parts Oversight module — documented in
+`NEW_PARTS_AND_STOCK_INVENTORY.md` under "Related ticket — AG-284".
+
+**2026-09-11 — new requirement, full Overview-tab column audit found this ticket only covers 2 of
+the 4 resolution-stage buckets sharing this same drilldown widget/mechanism
+(`parts_inventory_drilldown_panel.tsx`, `extraColumns` keyed on `params.resolutionStage`). Extend to
+the other two:**
+- **Awaiting eBay Listing (`READY_FOR_SALE`)** — add First Flagged Date + days past return window.
+  Per the user, backend already selects `firstFlaggedDateText`/`returnWindowDays` for every bucket
+  (`inventory.service.ts:6410-6413`) — claimed frontend-only, no backend change. **Needs
+  verification against current code before trusting** — line numbers/claims from tickets have
+  drifted before this session (AG-287/AG-288 both touched this same file).
+- **Listed on eBay – Unsold (`ALREADY_ON_SALE`)** — add Listed Date + Listed By. Per the user, both
+  fields exist on `TaskPart` and are already batch-fetched for AG-260/261/263
+  (`inventory.service.ts:797-816, 1005-1034`) but NOT yet selected into
+  `getPartsInventoryDrilldown` for this bucket — needs a new select + a new `extraColumns` branch.
+- **Return Window Unknown** — diagnostic distinction wanted between "no PO linked" vs. "supplier has
+  no return window set" (currently one undifferentiated bucket). `po`/`poSupplier` already joined
+  per the user (`inventory.service.ts:6247-6248`) — needs verification + a derived
+  flag/label, not just a raw column.
+- **Also requested: sorting on the (new and existing) columns** in this panel — likely reuses the
+  `sorting`/`sortMap` mechanism just added backend-wide in [[issue-AG-288-column-sorting-gaps]].
+
+**2026-09-11 — built, `tsc` clean both repos + `next lint` clean.** No migration (all fields already
+existed on `TaskPart`; only new selects/joins). Confirmed the ticket's own line-number references had
+drifted (e.g. quoted `6247-6248` for the po/poSupplier join actually landed in an unrelated People
+function; the real join is inside `getPartsInventoryDrilldown` itself) — re-verified against live
+code before building, not trusted as given.
+- **`inventory.service.ts` (`getPartsInventoryDrilldown`)**: added `.leftJoin(User, "listedByUser",
+  "listedByUser.id = taskPart.listedBy")` (listedBy is a plain int, no relation — same precedent as
+  `vehicle.service.ts:16210`'s `mechUser` join, chosen over a post-query batch-fetch specifically so
+  "Listed By" stays sortable in SQL before the 200-row cap). New selects: `po.id` (as `poId`),
+  `taskPart.listedDateText`, `listedByUser.firstName/lastName`. `sortMap` gained 4 entries:
+  `daysPastWindow` (mirrors `returnDaysLeft`'s expression, negated), `listedDate`, `listedBy`
+  (CONCAT, same convention as `technician`/`requestedBy`), `reason`.
+- **`parts_inventory_drilldown_panel.tsx`**: 3 new `extraColumns` branches —
+  - `READY_FOR_SALE` ("Awaiting eBay Listing"): First Flagged Date (reused `firstFlaggedDate`
+    sortKey) + "Days Past Return Window" (`days - returnWindowDays`, always defined here since this
+    bucket's own query filter guarantees both non-null — genuinely frontend-only, matching the
+    user's own note).
+  - `ALREADY_ON_SALE` ("Listed on eBay – Unsold"): Listed Date + Listed By.
+  - `UNKNOWN` ("Return Window Unknown"): added a 3rd column, "Reason".
+
+**2026-09-11 follow-up (same day) — multi-reason correction.** User caught that the initial
+single-priority `getReturnWindowUnknownReason()` (pick one of 3 mutually-exclusive-seeming causes)
+was wrong: "no arrival date" and "PO/window missing" are actually **independent** — a row can be
+missing both at once, and picking just one would silently hide the other. Rebuilt as
+`getReturnWindowUnknownReasons()` returning a string array (pushes "No arrival date recorded" if
+`partArrivedDate` is null, and separately pushes "No PO linked"/"Supplier has no return window set"
+if `returnWindowDays` is null), joined with `" + "`. Per the user's own explicit ask, kept the cell
+compact when both apply: `className="block max-w-[220px] truncate"` + a native `title` attribute
+carrying the full joined text for hover, rather than letting the row wrap/widen. Backend's `reason`
+sortMap rank changed from a 3-way priority CASE to a combination rank (`arrival-missing? +4` plus
+`no-PO? +2 : no-window? +1 : 0`) so rows sharing the same combination of reasons sort together —
+single-priority ranking would have scattered "both missing" rows arbitrarily between the two
+single-cause groups. `tsc`+`next lint` clean both repos after this correction too.
+
+Not yet manually verified in the running app by the user beyond this review — closed by explicit
+"mark the ticket AG-284 as done" instruction.
 
 **Both "Awaiting Supplier Return" and "Return Window Unknown" are the same shared component**
 (`parts_inventory_drilldown_panel.tsx`), opened with different `resolutionStage` params

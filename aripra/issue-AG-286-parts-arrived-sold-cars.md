@@ -7,8 +7,22 @@ metadata:
 
 ## NOW
 
-**Status: DONE (closed) 2026-09-10.** `tsc` clean backend (frontend untouched — pure backend fix,
-confirmed pass-through display). Closed by explicit instruction. No migration.
+**Status: DONE (closed) 2026-09-14.** Previously closed 2026-09-10, bounced back 2026-09-11 for the
+Supplier Window/Return Days Left follow-up below (built same day), re-closed 2026-09-14. No
+migration.
+
+**2026-09-11 follow-up — built, `tsc` clean both repos + `next lint` clean.** Same "Overview-tab
+column audit" source as [[issue-AG-284-drilldown-return-window-columns]]'s follow-up, resumed
+together with [[issue-AG-287-overdue-fitting-instock-statuses]] and
+[[issue-AG-257-alert-checks-tab]]. Added Supplier Window + Return Days Left to
+`getPartsInventoryGoneList` (Alert Checks "Car gone" table) — new `.leftJoin("po.supplier",
+"poSupplier")` (buildBase already joined `po`, just not `poSupplier`), new
+`poSupplier.returnWindowDays` select, 2 new `sortMap` entries. Return Days Left computed from this
+table's own existing `days` field (`DATEDIFF(NOW(), partArrivedDate)`, already selected) instead of
+re-selecting the raw date and importing `computeDaysLeft` — mathematically identical to AG-284's
+approach, just reuses a value already on the row. Frontend: 2 new columns in
+`parts_inventory_alert_table.tsx`'s "gone" variant, same styling/thresholds as AG-284's drilldown
+(red ≤1 day, orange =2 days).
 
 Bug: the "gone car" bucket (Overview KPI tile **"Parts arrived on sold cars"**, its drilldown, and
 the Alert Checks "Car gone" list) flagged ANY arrived-unused part on a Sold/Refunded/Cancelled

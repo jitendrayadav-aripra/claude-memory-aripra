@@ -7,11 +7,16 @@ metadata:
 
 ## NOW
 
-**Status: DONE (closed) 2026-09-11.** `tsc` clean (backend-only). No migration. Closed by explicit
-instruction. Already fetched via Jira in the prior session turn
-(while updating the Release 2 doc, which now references this ticket as an in-progress item under
-"Overdue-Fitting Check Doesn't Yet Cover All In-Stock Vehicle Types"). Sibling to
+**Status: DONE (closed) 2026-09-14.** Originally closed 2026-09-11, bounced back same day for the
+"Requested by" follow-up below (built same day), re-closed 2026-09-14. No migration. Sibling to
 [[issue-AG-286-parts-arrived-sold-cars]] (same Overview KPI family, same reporter).
+
+**2026-09-11 follow-up — built, `tsc` clean both repos + `next lint` clean.** Same audit source as
+AG-284/AG-286's follow-ups, resumed together with them plus [[issue-AG-257-alert-checks-tab]]. Added
+"Requested by" to `getPartsInventoryBreachList` (the breach table) — new
+`.leftJoin("taskPart.createdBy", "requestedBy")` (distinct from the existing "PO by" =
+`po.poCreatedBy`, per [[feedback_distinct_actor_timestamp_fields]]), new select + `sortMap` entry.
+One new frontend column.
 
 **Core ask:** the "overdue fitting" / breaching-2-day-rule metric currently only flags parts on
 vehicles with `status = "In Stock"` exactly. Akash confirmed 6 more statuses are also physically

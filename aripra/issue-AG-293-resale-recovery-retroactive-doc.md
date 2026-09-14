@@ -7,11 +7,11 @@ metadata:
 
 ## NOW
 
-**Status: DONE (closed) 2026-09-14.** Retroactive documentation ticket, no code change — the feature
-itself was built earlier (2026-09-09, under AG-270's research ticket, which is itself still "research
-only, not a build commitment" per its own description and never reflected the shipped work). Same
-pattern as [[issue-AG-273-part-note-panel-resolution-actions]] (retroactive doc ticket for AG-260's
-already-built work).
+**Status: DONE (closed) 2026-09-14.** Originally closed same day as a pure retroactive documentation
+ticket (no code change — the feature was built earlier, 2026-09-09, under AG-270's research ticket,
+which is itself still "research only, not a build commitment" and never reflected the shipped work,
+same pattern as [[issue-AG-273-part-note-panel-resolution-actions]]); bounced back same day for the
+"(AI)" labeling follow-up below (this time a real code change), re-closed same day.
 
 **Immediate trigger:** the feature was found missing from the current working branch (a
 `AKASH/Feature-AG-271-AI-recoverable-resaleprice` branch had it, current branch didn't) — traced via
@@ -43,6 +43,14 @@ Required); decays 5 percentage points per 30 days since arrival; floors at 20% r
 
 **Related:** [[issue-AG-270-ai-resale-price-research]] (the research ticket this documents — still
 open/in-progress, research-only, never reflects this shipped build).
+
+**2026-09-14 follow-up — label the recoverable figure as AI-estimated, not a hard fact.** Built,
+`tsc`+`next lint` clean, no backend change.
+- Task Card tooltip: `Recoverable: £X` → `Recoverable(AI): £X`, exact wording the user gave.
+- Overview tile — no equivalent labeled line here (the recoverable value is the bare headline
+  number), so proposed and confirmed a small `(AI)` marker inline next to the figure itself
+  (`text-[10px] text-[#9CA3AF]`), not inside the separate "Price paid: £X" hover tooltip (a
+  different, non-AI figure, deliberately left untouched).
 
 ---
 

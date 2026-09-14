@@ -7,7 +7,19 @@ metadata:
 
 ## NOW
 
-**Status: DONE (closed) 2026-09-14.** Jira title/description rescoped same day to hover-color only.
+**Status: DONE (closed) 2026-09-14.** Previously closed same day, bounced back same day for the
+chart hover-color follow-up below, re-closed same day. Jira title/description rescoped to
+hover-color only.
+
+**2026-09-14 further follow-up — extend hover color to the Overview tab's "Ageing of arrived-but-
+unused parts" bar chart too**, per a screenshot showing the chart's default Recharts gray hover
+highlight looked inconsistent next to the now-`#F8FAFF` table rows. Built: added
+`cursor={{ fill: "#F8FAFF" }}` to the chart's `RechartsTooltip` (Recharts' `Tooltip.cursor` prop
+controls the highlighted rectangle drawn behind the hovered bar — distinct from `Bar`'s own `cursor`
+prop, which is just the CSS mouse-pointer style and was already `"pointer"`). Only applied to the
+currently-visible ageing chart — the legacy stacked waste-by-month chart (`SHOW_LEGACY_WASTE_CHART`
+flag, kept intact but not rendered) was left untouched since it isn't live and wasn't asked about.
+`tsc`+`next lint` clean.
 Originally opened with 2 requirements in one ticket; once [[issue-AG-292-kpi-card-hover-details]]
 was raised as the official, separately-tracked ticket for the KPI tooltip work (with its own exact
 required wording), the user asked to narrow AG-291's actual Jira summary/description back down to

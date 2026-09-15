@@ -56,8 +56,13 @@
 - [Create ticket file immediately on open](feedback/create-ticket-file-immediately-on-open.md) — the moment "new ticket: X" is said, create its memory file + active-index line, before any analysis — not at close-out, not when asked
 - [Always update the living doc](feedback/always-update-living-doc.md) — proactively update `NEW_PARTS_AND_STOCK_INVENTORY.md` at every ticket close-out in this domain, don't wait to be asked
 
+## Patterns
+
+- [TypeORM .where() replaces, not appends](pattern/typeorm-where-replaces-not-appends.md) — a later `.where()` call silently discards earlier `.andWhere()` conditions in the same query-builder function; check for every `.where(` call in a function before deciding where a new `.andWhere()` guard is safe to add
+
 ## References
 
+- [Release notes docx workflow](reference/release-notes-docx-workflow.md) — where the Parts Leakage/Oversight release-notes docx files live, their exact section format, and how to build the next one from the prior release's script
 - [Local MySQL access without MCP](reference/local-mysql-access-without-mcp.md) — no local MySQL MCP configured on this machine (`.mcp.json` gitignored, doesn't exist); connect directly via `mysql2` + `car-planet-backend/.env` instead — mind the CRLF parsing gotcha
 - [claude-skills repo](reference/claude-skills-repo.md) — optional shared skills repo; auto fetch + ff-only pull at session start
 - [Session-start skills hook](reference/session-start-skills-hook.md) — `SessionStart` hook auto-pulls the skills repo each launch (adapt the path/repo to yours)

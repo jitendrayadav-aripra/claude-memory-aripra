@@ -91,6 +91,89 @@ looking correct. **Fix**: moved the same `.andWhere(...)` line to directly after
 clean. Flagged to the user that a backend restart may be needed to see it live, if hot-reload isn't
 picking up the change automatically — outside what could be verified from here.
 
+**2026-09-16 — bounced back, 2 follow-ups.** User asked for these directly (not via Jira comment).
+
+1. **Refitted drilldown missing destination columns.** The table only showed Refitted Date/By, not
+   which task/vehicle the part actually went to. Added a "Refitted To" column showing
+   `"{VRM} · {task category}"` — same wording as the existing Task Card "Refitted to: ..." tooltip
+   (`task_parts_status_badge.tsx`), reusing that exact resolved-value concept. Backend
+   (`getPartsInventoryDrilldown`): selected `taskPart.refittedVehicleId`/`refittedTaskId` (plain int
+   columns, no relation) and added a batch-fetch to resolve them to VRM/task-category-name — same
+   shape as the existing `refittedVehicleVrmMap`/`refittedTaskCategoryMap` batch-fetch already in this
+   file for AG-289's Part Returns Audit panel, not a new pattern. Frontend: new extraColumns entry,
+   marked `sortable: false` (no real SQL column backs it, so it can't sort server-side) — extended
+   `ExtraColumn`/the `extra` column-mapping logic to support that flag.
+2. **Resold drilldown's £ column renamed "Resale Price"** (RESOLD bucket only; every other bucket
+   keeps "£") — the column already showed `resalePrice`, just needed the honest label.
+
+**Same-day, broader follow-up — truncate long user-name/part-name columns across every Parts Leakage
+table.** User reported these columns (Requested By, PO by, Technician, Workshop manager, part/product
+names) were forcing every table in every tab to scroll horizontally. Built a shared
+`truncated_cell.tsx` component (new file, module root — `Skeleton`+`title`-attribute style already
+established for the "Reason" column: `truncate` + an explicit `max-width` in px, since MRT's
+`layoutMode: "grid"` needs an explicit width or flex lets content overflow before `truncate` kicks in)
+and applied it to every matching column across the module:
+- Drilldown panel: Part, Requested by, Technician, Listed By, Resold By, Refitted By, and the new
+  Refitted To column.
+- Alert Checks table: Part, PO by, Technician, Requested by.
+- Ready Cars table: Workshop manager.
+- People pivot table: the person-name column (all 3 roles).
+- People person table: Part.
+- Consumables tab: Product — included even though it's not literally a "part name", since it's the
+  same long-text-forces-horizontal-scroll problem in this module; flagged this scope call to the user
+  rather than silently deciding.
+
+No migration. `tsc` clean both repos, `next lint` clean on all 7 changed/new frontend files.
+
+**2026-09-16 — 3rd follow-up: task-link icons on Refitted From/To — built, discarded, then
+rebuilt.** User wanted both the origin and destination task explicitly clickable in the Refitted
+drilldown (icon + click-to-open, matching `consumable_returns_audit_tab.tsx`'s "Task" column, VRM as
+the label). First implementation was discarded by the user (uncommitted diff lost) before the
+formula-tooltip work below, then explicitly asked for again afterward ("now we have to implement
+that redirection... do you remember that") — rebuilt identically from this same description:
+- Backend (`getPartsInventoryDrilldown`): added raw `refittedVehicleId`/`refittedTaskId` to the
+  drilldown row's output (previously only resolved to display text via a batch-fetch, IDs never
+  reached the frontend). Removed the now-unused task-category batch-fetch (`TaskRepository.find` +
+  `taskCategory` join) — kept only the VRM lookup.
+- Frontend: new `renderTaskLinkVrm(vrm, taskId, vehicleId)` helper — `TruncatedCell` + the
+  `/open-popup-icon.svg` icon asset, calling the existing `openTaskCard(taskId, vehicleId)` hook
+  (already used for this table's whole-row click), with `stopPropagation`. New "Refitted From"
+  column (origin task, same as row-click, made explicit) + "Refitted To" now VRM+icon only (task
+  category text dropped). Both non-sortable.
+
+Currently live in the code, `tsc`+`next lint` clean both repos. The 2nd follow-up above (Refitted To
+column + Resale Price rename + truncation pass) was separately committed (`617b3d9c6`) earlier and
+was unaffected by the discard.
+
+**2026-09-16 — 4th follow-up: AI-formula tooltip on "Awaiting eBay Listing".** User asked for an info
+icon next to the "(AI estimated Recoverable price)" label on the Overview tab's "Awaiting eBay
+Listing" sub-card, showing the formula behind the AI-estimated figure on hover. Verified the exact
+formula against `computeSuggestedResalePrice` (`non_conforming_tab.tsx:120`) and its SQL twin
+(`inventory.service.ts` ~line 5728, kept in sync manually per that code's own comment): 50% of price
+paid if Faulty / 80% if Incorrect or Not Required, minus 5% per 30 days since arrival, floored at 20%
+— of `COALESCE(invoiceUnitPrice, poUnitPrice)`. Reused the existing `KpiInfoTooltip` component
+(already defined in this file for the 5 top KPI cards) rather than building a new one. Restructured
+the card slightly so the pre-existing "Actual price paid" tooltip only wraps the price figure itself
+(not the whole line), so it doesn't visually overlap with the new formula tooltip on hover. Frontend
+only (`overview_tab.tsx`), no backend/migration change. `tsc`+`next lint` clean.
+
+No migration. `tsc` clean both repos, `next lint` clean.
+
+**2026-09-16 — 5th follow-up: label correction, caught by the user.** The "Awaiting eBay Listing"
+card's caption "(AI estimated Recoverable price)" was flagged by the user as wrong on two counts —
+the figure is a deterministic formula (`computeSuggestedResalePrice`), not AI/ML-generated at all,
+and it's a sum across many parts, not a single part's price. I should have caught the "AI" framing
+myself when I added the formula tooltip in the 4th follow-up and didn't — saved as
+[[dont-claim-ai-without-verifying]]. User corrected it to "(Estimated Recoverable Value)" directly
+in the code; I fixed the one leftover "AI-estimated" reference in that section's code comment for
+consistency. **Not yet fixed**: the same mislabeling exists in `task_parts_status_badge.tsx:137`
+("Recoverable Price (AI estimated): £X" on the Task Card's status hover) — flagged to the user,
+awaiting a decision on whether to fix that one too.
+
+**Status: DONE (closed) 2026-09-16.** Living doc (`NEW_PARTS_AND_STOCK_INVENTORY.md`) updated with a
+consolidated changelog entry covering the 2nd–5th follow-ups above. Jira ticket status NOT touched
+(memory-only close, per [[mark-as-done-means-memory-not-jira]]).
+
 ---
 
 ## HISTORY

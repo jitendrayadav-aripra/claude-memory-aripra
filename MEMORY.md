@@ -55,6 +55,8 @@
 - [Short commit messages](feedback/short-commit-messages.md) — one concise line, not a multi-bullet body
 - [Create ticket file immediately on open](feedback/create-ticket-file-immediately-on-open.md) — the moment "new ticket: X" is said, create its memory file + active-index line, before any analysis — not at close-out, not when asked
 - [Always update the living doc](feedback/always-update-living-doc.md) — proactively update `NEW_PARTS_AND_STOCK_INVENTORY.md` at every ticket close-out in this domain, don't wait to be asked
+- ["Mark as done" = memory only, not Jira](feedback/mark-as-done-means-memory-not-jira.md) — never call `transitionJiraIssue` on "mark as done"; that's memory-index-only unless the user explicitly asks to change the Jira status too
+- [Don't claim "AI" without verifying](feedback/dont-claim-ai-without-verifying.md) — before adding/keeping an "AI estimated" label, trace whether the value is actually model-generated or just a deterministic formula; flag it if it's the latter
 
 ## Patterns
 
@@ -70,6 +72,4 @@
 - *(add your tracker cookbook + platform reference files here)*
 
 ## Tickets — ACTIVE (pending action on me). Done/To Test → [ARCHIVE.md](ARCHIVE.md).
-
-
 

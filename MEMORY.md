@@ -62,6 +62,7 @@
 
 ## References
 
+- [Stock price estimation analysis docs](reference/stock-price-estimation-analysis-docs.md) — where the AG-271 "actual price paid" research analysis lives (`STOCK_ACTUAL_PRICE_PAID_ESTIMATION_ANALYSIS.md` + the STOCK-supplier follow-up), and its key findings
 - [Release notes docx workflow](reference/release-notes-docx-workflow.md) — where the Parts Leakage/Oversight release-notes docx files live, their exact section format, and how to build the next one from the prior release's script
 - [Local MySQL access without MCP](reference/local-mysql-access-without-mcp.md) — no local MySQL MCP configured on this machine (`.mcp.json` gitignored, doesn't exist); connect directly via `mysql2` + `car-planet-backend/.env` instead — mind the CRLF parsing gotcha
 - [claude-skills repo](reference/claude-skills-repo.md) — optional shared skills repo; auto fetch + ff-only pull at session start

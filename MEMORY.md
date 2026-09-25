@@ -38,6 +38,8 @@
 - [Answer ≠ edit (stay in scope)](feedback/answer-vs-edit-scope.md) — "answer"/"draft a reply"/"explain" = read-only; find a needed change → report + ask, don't edit unprompted
 - [Token economy](feedback/token-economy.md) — grep/offset never whole files; subagent for broad searches; batch edits; never dump raw logs/JSON (grep the marker)
 - [Debugging method](feedback/debugging-method.md) — MEASURE FIRST: auto-add a `#<ticket> TEMP DEBUG` logger capturing all candidates in ONE pass, auto-read, AUTO-CLEANUP before commit; lock the repro matrix; deterministic fix
+- [Don't conflate harness memory with this store](feedback/dont-conflate-harness-memory-with-this-store.md) — harness's own auto-loaded MEMORY.md is a different file; always explicitly load this store's MEMORY.md at session start regardless
+- [Backup/push scope = memory repo only](feedback/backup-push-scope-is-memory-repo-only.md) — "/backup"/"push it" means claude-memory-core-store → jitendrayadav-aripra/claude-memory-aripra only, never carplanet or car-planet-backend
 - [Session-start routine](feedback/session-start-routine.md) — auto-orient: index = live rules; scan skills; read ticket NOW first; token economy from action one
 - [Session-end: back up memory](feedback/session-end-backup-memory.md) — at wrap-up / "back up", commit + push the memory repo (keep it PRIVATE, owner-only)
 - [No library install without permission](feedback/no-library-install-without-permission.md) — never `npm install` a new dependency (either repo) on my own initiative, even when obviously the right tool — always ask first

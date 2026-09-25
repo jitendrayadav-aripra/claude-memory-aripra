@@ -59,6 +59,7 @@
 - [Always update the living doc](feedback/always-update-living-doc.md) — proactively update `NEW_PARTS_AND_STOCK_INVENTORY.md` at every ticket close-out in this domain, don't wait to be asked
 - ["Mark as done" = memory only, not Jira](feedback/mark-as-done-means-memory-not-jira.md) — never call `transitionJiraIssue` on "mark as done"; that's memory-index-only unless the user explicitly asks to change the Jira status too
 - [Don't claim "AI" without verifying](feedback/dont-claim-ai-without-verifying.md) — before adding/keeping an "AI estimated" label, trace whether the value is actually model-generated or just a deterministic formula; flag it if it's the latter
+- [Map to existing system = exhaustive sweep](feedback/map-to-existing-system-means-exhaustive-sweep.md) — in structured requirement-analysis prompts, grep the whole codebase for every consumer of the touched entity/field at the "map to existing system" step, don't scope it to the modules the ticket text happens to name
 
 ## Patterns
 
@@ -75,7 +76,7 @@
 
 ## Tickets — ACTIVE (pending action on me). Done/To Test → [ARCHIVE.md](ARCHIVE.md).
 
-- *(none right now)*
+- [AUT-3639 Booking — link multiple vehicles](carplanet/issue-AUT-3639-booking-link-multiple-vehicles.md) — 2 docs DONE + reconciled (flow trace corrected a factual error + a wrong claim in main doc); awaiting stakeholder scoping decisions
 
 
 

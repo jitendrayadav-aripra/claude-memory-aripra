@@ -29,6 +29,16 @@ Recoverable Value" total in place of the AI-estimate formula wherever a part has
   have every required change (stall timeout, single-digit exclusion, correct 2 AM cron time,
   no-staging gate) — but has not actually been pushed/deployed to production as of this writing.
 
+**2026-09-28 follow-up — Overview tile's info tooltip now explains both pricing paths.** The
+"Awaiting eBay Listing" tile's hover explanation only ever described the AI-estimate fallback
+formula, even after `ebayPrice × 0.90` started feeding the same total — misleading once real prices
+existed. Fixed in `overview_tab.tsx` (branch `AKASH/Feature-AG-299-2-...`, the production-target
+branch): tooltip now leads with the real-eBay-price rule, falling through to the unchanged formula
+bullets for parts that don't have one yet. `tsc` clean. Also confirmed via a direct read-only prod
+query the same day: **47 parts already have a real `ebayPrice`** on production (all searched
+2026-09-25 evening), out of **539 parts** currently matching full queue eligibility — so the daily
+queue is genuinely running end-to-end in production, not just locally.
+
 **Original status line, kept for history:** bulk endpoint built 2026-09-21, `tsc` clean, not
 deployed. Single-part endpoint explicitly deferred — user said "for now let's create a bulk api
 only."

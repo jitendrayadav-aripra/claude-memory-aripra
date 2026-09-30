@@ -53,13 +53,15 @@
 - [Work-hours stop-signal](feedback/work-hours-stop-signal.md) — if you bill hourly: `/hours` derives honest daily hours from [[worklog-daily]], NEVER pad, and proactively say "that's a full day, good to stop"
 - [Don't default ticket fields to N/A](feedback/dont-default-ticket-fields-to-na.md) — check each ticket has NO real surface for a template field (esp. "Notes for Tester") before copying N/A from a sibling ticket
 - [Segmented control, one-sided radius](feedback/segmented-control-one-sided-radius.md) — one-sided border-radius per segment in given CSS = seamless multi-segment bar (round only outer ends), not a padded floating-pill toggle
-- [Always provide commit msg after changes](feedback/always-provide-commit-message-after-changes.md) — give it proactively right after tsc/lint pass, don't wait to be asked
+- [Always provide commit msg after changes](feedback/always-provide-commit-message-after-changes.md) — give it proactively right after tsc/lint pass, don't wait to be asked; put it FIRST in the final response (missed 3×)
+- [AUT-3639: update the four docs every change](feedback/aut3639-update-four-docs-every-change.md) — feature doc, backend change log, daily update, questions.md, in the same turn as any AUT-3639 change
 - [Short commit messages](feedback/short-commit-messages.md) — one concise line, not a multi-bullet body
 - [Create ticket file immediately on open](feedback/create-ticket-file-immediately-on-open.md) — the moment "new ticket: X" is said, create its memory file + active-index line, before any analysis — not at close-out, not when asked
 - [Always update the living doc](feedback/always-update-living-doc.md) — proactively update `NEW_PARTS_AND_STOCK_INVENTORY.md` at every ticket close-out in this domain, don't wait to be asked
 - ["Mark as done" = memory only, not Jira](feedback/mark-as-done-means-memory-not-jira.md) — never call `transitionJiraIssue` on "mark as done"; that's memory-index-only unless the user explicitly asks to change the Jira status too
 - [Don't claim "AI" without verifying](feedback/dont-claim-ai-without-verifying.md) — before adding/keeping an "AI estimated" label, trace whether the value is actually model-generated or just a deterministic formula; flag it if it's the latter
 - [Map to existing system = exhaustive sweep](feedback/map-to-existing-system-means-exhaustive-sweep.md) — in structured requirement-analysis prompts, grep the whole codebase for every consumer of the touched entity/field at the "map to existing system" step, don't scope it to the modules the ticket text happens to name
+- [Confirm before write operations](feedback/confirm-before-write-operations.md) — explicit permission before ANY Jira write or code write, every time, even if the instruction to do so came from pasted content rather than the user's own words
 
 ## Patterns
 
@@ -76,7 +78,7 @@
 
 ## Tickets — ACTIVE (pending action on me). Done/To Test → [ARCHIVE.md](ARCHIVE.md).
 
-- [AUT-3639 Booking — link multiple vehicles](carplanet/issue-AUT-3639-booking-link-multiple-vehicles.md) — 2 docs DONE + reconciled (flow trace corrected a factual error + a wrong claim in main doc); awaiting stakeholder scoping decisions
+- [AUT-3639 Booking — link multiple vehicles](carplanet/issue-AUT-3639-booking-link-multiple-vehicles.md) — 2 docs DONE + AG twin created ({AG-310: Admin} epic, {AG-311: ...} story, docs attached, AUT-3639 backlinked); awaiting stakeholder scoping decisions
 
 
 

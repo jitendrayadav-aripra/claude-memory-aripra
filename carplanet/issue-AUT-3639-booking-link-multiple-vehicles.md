@@ -4,6 +4,29 @@ name: issue-AUT-3639-booking-link-multiple-vehicles
 
 ## NOW
 
+- **Status (2026-10-02): batch 3 coded, UNCOMMITTED, tsc clean, not browser-tested.**
+  Batch 2 appears committed (only batch-3 files dirty). Batch 3:
+  - Route bug: `PUT /booking/swap-primary-vehicle` was below `PUT /booking/:id` →
+    `"id" must be a number`; moved above it (comment says keep it there).
+  - Decision (user): keep 2 endpoints. `update-booking-vehicle` = fix wrong car
+    (old drops off); Make Primary = swap (old stays extra). Both write only
+    `booking.vehicle_id` + `updatedAt`.
+  - Deferred item 1 DONE: `updateBookingVehicle` rejects `isMultipleVehicle`
+    bookings; car icon greyed (Booking Details + Sales Diary list); reg-mismatch
+    "Switch" replaced by a Make Primary note on those rows.
+  - `swapPrimaryVehicle`: reads in tx with booking pessimistic_write lock; stale
+    is_primary=1 rows for non-primary vehicles → REMOVED; returns
+    `extraVehicles`; frontend `router.replace` with new `vid`.
+  - New open Q18: `advertPriceAmount` / lead vehicle not updated on swap.
+  - Next: user tests + commits; open Q's 1–13, 15–18.
+- **Status (2026-10-01): batch 1 committed (be f126fe859 / fe f485c6238, branch
+  AKASH/Feature-AG-312-adding-extravehicle); batch 2 (price hold/cap/counts/tx)
+  UNCOMMITTED. Migration HAS been run locally (confirmed via read-only local DB
+  check 01-10). Not yet tested.** Deferred items 2 (transaction), 5 (cap) and the
+  pricing-hold/stored-count parts of 7 are DONE — the list below is the 29-09
+  snapshot. New finding 01-10: Pricing Tool price hold is display-only — Update
+  Price uses stored `has_suggested_price_checked` with no viewing re-check
+  (questions.md #17).
 - **Status (2026-09-29): IMPLEMENTATION IN PROGRESS — first pass coded, not yet
   tested, migration NOT run.** Scope: schema + backend add/remove/swap + Booking
   Details page UI only. Full file list + deferred items in `tasks/todo.md` at

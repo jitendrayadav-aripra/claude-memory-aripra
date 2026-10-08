@@ -4,6 +4,100 @@ name: issue-AUT-3639-booking-link-multiple-vehicles
 
 ## NOW
 
+### RESUME MAP (read first; keep current after every change)
+- **Meridian intent:** GRID-IN-7. Use it with /start-intent-session (records prompts only, no
+  context), /analyse-intent and /implement-intent. Never submit anything to Meridian without the
+  user's OK. Meridian does NOT know what's built (nothing reported yet), so the list below is the
+  truth.
+- **Docs to update with EVERY change** (all in `my-docs/projects/Booking-AUT-3639-5th-project/`),
+  plus commit messages first:
+  1. `BOOKING_LINKING_MULTIPLT_VEHICLE_WITH_SINGLE_BOOKING_3639.md` (feature doc, section 5.x);
+  2. `project-log-whatimptablesormigration-added.md` (backend/table/migration log);
+  3. `date-wise-daily-update.md` (plain-language daily points, newest first);
+  4. `questions.md` (Q = open, R = resolved);
+  5. also `D:\aripra\projects\tasks\todo.md` and this memory file.
+  - Per-req status baseline: `meridian-GRID-IN-7-code-analysis-06-10-26.md`.
+- **Req status (as of 08-10-26):**
+  - **Done:** #2, #9, #16, #26 (06-10 baseline); #6 (AG-317); #3 (AG-314 pop-up); #22 (AG-324
+    part 1, tested on staging 07-10).
+  - **Built, not yet tested:** #25 (AG-324 part 3, "Add to booking").
+  - **Partial:**
+    - #1 (label and history done; "new bookings only" waits on amb#6);
+    - #7 (Start Deal only);
+    - #8 (UI only);
+    - #12 (status shown and Start Deal blocks; Make Primary/API not blocked);
+    - #13 (Sales Diary only);
+    - #17 (8 paths left);
+    - #23.
+  - **Missing:** #4, #5 (AG-321), #10, #15 (AG-322), #11 (AG-323), #14 (AG-315), #18 (AG-320),
+    #19 (AG-327), #20 (AG-325), #21 (AG-326), #24 (AG-324, waits for Anup).
+- **Open idea (08-10):** a £99 reservation that is still only a lead (no booking yet) is not
+  caught by the "Add to booking" pop-up. That's the reverse of the Merge Booking order, and no
+  requirement covers it. Asked the user whether to log it as a client question.
+
+- **⚠ REMIND USER (open, questions.md Q25):** AG-324 Merge Booking was built with the REUSE
+  approach (frontend calls existing endpoints in sequence). Ask again before release whether to
+  switch to one all-or-nothing backend "merge" action (half-done risk: B added as extra but not
+  yet primary if the connection drops).
+- **⚠ REMIND USER (open, questions.md Q26):** production's 48h Reservation auto-expiry (AUT-3806,
+  Sourabh f5ae4ef1d, vehicle_data.reservation_started_at + cron) still releases Car B after a
+  merge: "Both" (B is main + £99) and "Only A + leave reserved". Ask client/Sourabh whether
+  merged bookings' main car should be exempt/reset, and whether pop-up wording should mention it.
+- **07-10 AG-324 part 3 "Add to booking" (req#25) BUILT, uncommitted, tsc clean both repos,
+  awaiting staging test.**
+  - **Backend:** `getAddToBookingInfo` in sales-diary.service.ts adds addToBooking
+    (ALLOWED/AT_LIMIT/ALREADY_ON_BOOKING/NOT_ELIGIBLE) plus existingBooking/newVehicle to the
+    APPOINTMENT_IN_FUTURE payload. NOT_ELIGIBLE means: a non-viewing booking, a main car on
+    Deposit/Sold, isCustomerPurchased, or any deal on the booking that isn't Inactive.
+  - **Frontend:** new booking/modals/add_to_existing_booking_modal.tsx, wired into
+    create_new_appointment_modal.tsx and ag_create_booking_modal.tsx through `openFutureBooking`
+    (today's redirect, extracted unchanged). Add → POST extra-vehicle → redirect.
+  - Decisions are in questions.md R17.
+- 07-10 user TESTED AG-324 part 1 (Merge Booking) — working fine. Client decisions still pending
+  (Meridian amb#1–#9, questions Q25/Q26). Moving on to next items.
+- 07-10 merge production → AKASH/Feature-AG-324-merge-booking: 1 conflict (sales-diary.service.ts
+  release block) resolved "accept both" = our releaseLeadVehicle `if` + production's
+  clearReservationStarted INSIDE it. tsc clean; user to git add/commit and run production's new
+  migration (add-reservation-started-at-to-vehicle) — I must not run migrations.
+
+- **06-10 NEW INTERNAL JIRA STRUCTURE (use these keys from now on):** Epic AG-313.
+  Stories AG-314 Booking Details, 315 Sales Diary badge/search, 316 Start Deal,
+  317 change-vehicle icon (req#6), 318 swap permission, 319 price hold/counts,
+  320 movement planner, 321 categories, 322 Invoice tab/Stock page, 323 reservation
+  release, 324 Merge/Add-to-booking, 325 booking site, 326 test drive forms,
+  327 Live ETA, 328 sale side primary-only. Bugs AG-329 old link, 330 Move deal,
+  331 dev prefill, 332 Pricing Tool Update Price. Done-work sub-tasks AG-333–338
+  (AG-314), 339 (AG-315), 340–343 (AG-316), 344–345 (AG-319). All unassigned, no
+  status set (user does it). AG-310/311/312 kept; AG-311 Relates→AG-313 + comment.
+- **06-10 full Meridian code analysis done** → my-docs/.../meridian-GRID-IN-7-code-analysis-06-10-26.md.
+  Done: #2,#9,#16,#26. Partial: #1,#7,#8,#12,#13,#17,#23. Missing: #3,#4,#5,#10,#11,#14,#15,
+  #18,#19,#20,#21,#22,#24,#25. Contradicted: #6 (batch 3 block). Key: existing AUT-3142
+  merge Option1 deletes booking / Option2 auto-releases car (BE:4137-4174) vs req#22/#11;
+  lead Start Deal puts lead.id as bookingId (lead_enquiry_list.tsx:1787) — separate bug.
+  User approved A+B+C: Meridian amb#5–#8 submitted (merge options, new-bookings-only,
+  "1 of 2 signed" location, no-buyer-record). AG-346 Bug created (lead Start Deal
+  lead.id→bookingId). AG-332 updated (calculatePricingToolData auto-ticks). questions Q21–Q24.
+- **06-10 AG-317 built (uncommitted, tsc clean):** updateBookingVehicle no longer rejects
+  extras — active extra → delegates swapPrimaryVehicle; new car → replace + stale
+  is_primary=1 rows REMOVED in locked tx; returns extraVehicles. Controller passes
+  req.user.id. Reg-mismatch suggestion skips extras. Car icon + Switch re-enabled (FE).
+  Reverses AG-338. (AG-317 since committed by user.)
+- **06-10 AG-314 built (uncommitted, tsc clean):** "+" at limit → ConfirmationBox "You can add
+  up to 3 extra vehicles to a booking" (BE cap msg same); "Primary vehicle" label when extras;
+  extra rows show status; remove-last clears isMultipleVehicle in state; swap outgoing-row
+  lookup ACTIVE only (keeps REMOVED history). "Only new bookings" waits amb#6.
+- 06-10 Meridian refresh: raw#12 client staging feedback (empty search in Add Extra modal +
+  primary/added unpickable; status on extra cards = done AG-314; "are you sure" on remove;
+  "/1843" record counter blank). amb#9 new (decline "Remove extras?" prompt). 8 reqs CONFIRMED
+  (#1,2,3,4,5,6,8,9). amb#5 still open.
+- AG-314 + AG-317 committed by user (be 7407db4e0/3e95230a3, fe 3ce51b68a/6dd6f53de).
+- **06-10 AG-324 part 1 built (uncommitted, tsc clean):** Merge Booking modal → 2 tick-box
+  cards both ticked + Result line; both = add B extra (skip if already) → swap B → PUT reservation;
+  only A = ask "Release B?" → PUT {…, releaseLeadVehicle}; only B = update-booking-vehicle (or
+  swap+remove A if B already extra) → PUT reservation; no delete/WhatsApp. BE: checkCustomer
+  ActiveBooking returns extraVehicleIds; updateBooking releaseLeadVehicle flag (default old behaviour).
+  Not done: req#23 wider detection, req#24 (Anup), req#25 (amb#1), extras tick boxes in modal.
+
 - **Status (2026-10-02): batch 3 coded, UNCOMMITTED, tsc clean, not browser-tested.**
   Batch 2 appears committed (only batch-3 files dirty). Batch 3:
   - Route bug: `PUT /booking/swap-primary-vehicle` was below `PUT /booking/:id` →
@@ -18,7 +112,42 @@ name: issue-AUT-3639-booking-link-multiple-vehicles
     is_primary=1 rows for non-primary vehicles → REMOVED; returns
     `extraVehicles`; frontend `router.replace` with new `vid`.
   - New open Q18: `advertPriceAmount` / lead vehicle not updated on swap.
-  - Next: user tests + commits; open Q's 1–13, 15–18.
+  - 05-10: Make Primary now dispatches SELECTED_VEHICLE (UPDATE_VEHICLE ignores
+    id change) → card swaps instantly. "Buttons dead" = booking in the past →
+    booking_section ReadonlySection pointer-events:none (existing rule, kept).
+    Branch is now `AKASH/Feature-AG-312-2-booking-price-hold`; batch 2 committed
+    be 45d9c64d8 / fe f5e633b79.
+  - 05-10: "plate unchanged / extras lost on refresh" = user's frontend ran
+    `next start` on a 01-10 build (no batch 3). Booking 312894 swap verified in
+    DB (GSZ7848 primary). Told user: use `npm run dev`. Deferred item 8 (stale
+    URL → wrong booking; proposed GET /booking/:id/current-vehicle + redirect)
+    DEFERRED by user until discussed with client = questions.md Q19. Combined swap commit messages given 05-10.
+  - 05-10 MERIDIAN now used in this session (GRID-IN-7: 11 raws, 26 open reqs, 4 open
+    ambs, 0 confirmed). Client decisions there supersede several local ones (req#6 car
+    icon must keep working = conflicts w/ batch 3 block; req#3 friendly limit popup;
+    req#10 Invoice tab). Full code-grounded analysis still pending (user: Start Deal first).
+  - Batch 4 PLANNED (todo.md), awaiting go-ahead: Start Deal choose-vehicle popup
+    (req#8), extras greyed if no SALES_DIARY_ACTIONS or Deposit/Sold to another customer
+    (no buyer record = blocked), "No deal was created" popup now, permission in popup
+    only. Questions R12–R15 resolved.
+  - User committed batch 3 + instant-card fix: be f05f495b8, fe 084ca0d54 (05-10).
+  - Batch 4 IN PROGRESS (uncommitted): B1 backend `isTakenByAnotherCustomer` on
+    extras (filteredBookingsNew, reuses reg-mismatch candidates); checkpoint 1 popup
+    `select_deal_vehicle_modal.tsx` + Start Deal opens it on bookings with extras
+    (confirm = close only). Checkpoint 2 greying done (taken-by-another reason wins,
+    else no SALES_DIARY_ACTIONS). User committed fe cp1 5d5f0b06b (AG-312-3), cp2
+    ddf7bdbb8 (AG-312-4) — user's ticket suffix convention AG-312-N.
+    Checkpoint 3 done, uncommitted: startDealOnVehicle (moved from cell) +
+    confirmDealVehicle (swap → performListChangesOnBookingUpdate → sessionStorage
+    `deal_vehicle_swap` note → deal). Checkpoint 4 done 06-10 (uncommitted):
+    invoice_tab_v2 builder onClose → checkNoDealCreatedAfterSwap (ref set only by
+    openDeal auto-open w/ matching note; GET /vehicle-deal/vehicle/:id bookingId) →
+    no_deal_created_modal.tsx (overlay = Keep; Switch back = swap endpoint).
+    VehicleDeal type + bookingId. Batch 4 complete → user testing.
+  - 06-10: empty Start Deal prefill = dev-only React Strict Mode double-run of
+    invoice_tab_v2 openDeal effect (prefill one-time). Prod build OK (user
+    confirmed). NOT fixing now = deferred item 10. Test Start Deal on build+start.
+  - Open Q's 2–13, 15–20.
 - **Status (2026-10-01): batch 1 committed (be f126fe859 / fe f485c6238, branch
   AKASH/Feature-AG-312-adding-extravehicle); batch 2 (price hold/cap/counts/tx)
   UNCOMMITTED. Migration HAS been run locally (confirmed via read-only local DB
